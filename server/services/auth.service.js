@@ -1,4 +1,8 @@
-const { BadRequestError, ConflictError } = require("../core/error.response");
+const {
+  BadRequestError,
+  ConflictError,
+  NotFoundError,
+} = require("../core/error.response");
 const jwt = require("jsonwebtoken");
 const authModel = require("../models/auth.model");
 const { checkAuth } = require("../models/repository/auth");
@@ -47,14 +51,32 @@ class AuthService {
     }
 
     // Kiểm tra email đã tồn tại trong hệ thống
-    const user = await checkAuth("email", email);
+    const user = await authModel.findOne({ email, role: "user" });
     if (!user) throw new ConflictError("Email not found", 404);
 
     // So sánh mật khẩu đã mã hóa với mật khẩu người dùng nhập vào
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) throw new ConflictError("Invalid password", 401);
-    const { password: _, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    const payload = {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+    };
+
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET_USER, {
+      expiresIn: "1h",
+    });
+
+    return {
+      accessToken,
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        phoneNumber: user.phoneNumber,
+        role: user.role,
+      },
+    };
   }
 
   static async loginAdmin(body) {
@@ -81,6 +103,15 @@ class AuthService {
     });
 
     return accessToken;
+  }
+
+  static async getAuthUser(userId) {
+    const user = await authModel
+      .findById(userId)
+      .select("-password") // không trả về mật khẩu
+      .lean();
+    if (!user) throw new NotFoundError("User not found", 404);
+    return user;
   }
 }
 module.exports = AuthService;

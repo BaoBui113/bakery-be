@@ -10,17 +10,18 @@ mongoose.connect(db, {
 });
 
 const sampleNames = [
-  "Bánh Kem Socola Hạnh Nhân",
-  "Bánh Kem Dâu Tươi",
-  "Bánh Kem Matcha Trà Xanh",
-  "Bánh Kem Tiramisu Ý",
+  "Bánh Mì Pháp Bơ Tỏi",
+  "Bánh Mì Sừng Bò Thịt Nguội",
+  "Bánh Mì Pate Xúc Xích",
+  "Bánh Mì Thịt Heo Quay",
+  "Bánh Mì Chả Cá Nướng",
 ];
 
 const seedProducts = async () => {
   try {
     const products = sampleNames.map((name, i) => ({
       name,
-      category_id: "6811e00fd8cefba09d490e9f",
+      category_id: "681439e6c64935e8d107e1e5",
       description: "Sản phẩm độc quyền nhà bakery shop",
       price: 300000 + i * 10000,
       stock: 50 + i * 5,

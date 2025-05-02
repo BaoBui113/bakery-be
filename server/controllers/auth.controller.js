@@ -20,5 +20,14 @@ class AuthController {
       metadata: await AuthService.loginAdmin(req.body),
     }).send(res);
   }
+  static async getAuthUser(req, res) {
+    const user = await AuthService.getAuthUser(req.user.id);
+    new SuccessResponse({
+      message: "Fetch auth user successfully",
+      metadata: {
+        user,
+      },
+    }).send(res);
+  }
 }
 module.exports = AuthController;

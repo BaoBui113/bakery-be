@@ -29,7 +29,7 @@ class ProductController {
   static async purchaseProduct(req, res) {
     return new SuccessResponse({
       message: "Purchase product successfully",
-      metadata: await ProductService.purchaseProduct(req.body),
+      metadata: await ProductService.purchaseProduct(req.body, req.user.id),
     }).send(res);
   }
 }

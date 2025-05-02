@@ -112,8 +112,10 @@ class ProductService {
     return deletedProduct;
   }
 
-  static async purchaseProduct(body) {
+  static async purchaseProduct(body, userId) {
+    console.log("body", body);
     const { productId, quantity } = body;
+
     if (!productId || !quantity || quantity <= 0) {
       throw new BadRequestError("Invalid product ID or quantity", 400);
     }
@@ -143,7 +145,7 @@ class ProductService {
           404
         );
       }
-      const order = await createOrder(product._id, quantity, "pending");
+      const order = await createOrder(product._id, quantity, "pending", userId);
 
       await redisClient.set(
         `pending_payment:${order._id}`,
@@ -155,6 +157,7 @@ class ProductService {
           EX: 60 * 60, // 1 tiếng
         }
       );
+
       await session.commitTransaction();
       session.endSession();
 
