@@ -169,6 +169,14 @@ class ProductService {
     }
   }
 
+  static async getProductById(id) {
+    const product = await productModel.findById(id).lean();
+    if (!product) {
+      throw new BadRequestError("Product not found", 404);
+    }
+    return product;
+  }
+
   static paymentSuccess(orderId) {
     return redisClient.del(`pending_payment:${orderId}`);
   }
