@@ -96,39 +96,102 @@ class OrderService {
     return orders;
   }
 
-  static async confirmOrder(orderId) {
-    const order = await orderModel.findById(orderId);
+  static async confirmOrder(orderId, userId) {
+    const order = await orderModel.findOne({
+      _id: convertToObjectMongoose(orderId),
+      userId,
+    });
     if (!order) throw new BadRequestError("Order not found", 404);
-    if (order.status !== "pending")
-      throw new BadRequestError("Order already confirmed or cancelled", 400);
-
+    if (order.status === "pending")
+      throw new BadRequestError("Order already cancelled", 400);
     order.status = "paid";
     await order.save();
-
     return order;
   }
 
-  static async cancelOrder(orderId) {
-    const order = await orderModel.findById(orderId);
-    if (!order) throw new BadRequestError("Order not found", 404);
-    if (order.status !== "pending")
-      throw new BadRequestError("Order already confirmed or cancelled", 400);
+  static async cancelOrder(orderId, userId) {
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-    order.status = "cancelled";
-    await order.save();
+    try {
+      const order = await orderModel
+        .findOne({
+          _id: convertToObjectMongoose(orderId),
+          userId,
+        })
+        .session(session);
 
-    return order;
+      if (!order) throw new BadRequestError("Order not found", 404);
+      if (order.status === "cancelled")
+        throw new BadRequestError("Order already cancelled", 400);
+
+      // Tìm sản phẩm liên quan đến đơn hàng
+      const product = await productModel
+        .findById(order.productId)
+        .session(session);
+      if (!product) throw new BadRequestError("Product not found", 404);
+
+      // Tăng lại số lượng sản phẩm trong kho
+      product.stock += order.quantity;
+      await product.save({ session });
+
+      // Cập nhật trạng thái đơn hàng
+      order.status = "cancelled";
+      await order.save({ session });
+
+      // Commit transaction
+      await session.commitTransaction();
+      session.endSession();
+
+      return order;
+    } catch (err) {
+      // Rollback transaction nếu có lỗi
+      await session.abortTransaction();
+      session.endSession();
+      throw err;
+    }
   }
 
-  static editQuantityOrder = async (orderId, quantity) => {
-    const order = await orderModel.findById(orderId);
-    if (!order) throw new BadRequestError("Order not found", 404);
-    if (order.status !== "pending")
-      throw new BadRequestError("Order already confirmed or cancelled", 400);
-    order.quantity = quantity;
-    await order.save();
+  static editQuantityOrder = async (orderId, userId, newQuantity) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+      const order = await orderModel.findOne({
+        _id: convertToObjectMongoose(orderId),
+        userId,
+      });
+      if (!order) throw new BadRequestError("Order not found", 404);
 
-    return order;
+      // Lấy sản phẩm liên quan đến đơn hàng
+      const product = await productModel
+        .findById(order.productId)
+        .session(session);
+      if (!product) throw new BadRequestError("Product not found", 404);
+
+      // Tính toán sự thay đổi số lượng
+      const quantityDifference = newQuantity - order.quantity;
+      // Cập nhật số lượng sản phẩm trong kho
+      product.stock -= quantityDifference;
+      if (product.stock < 0) {
+        throw new BadRequestError("Insufficient stock for product", 400);
+      }
+      await product.save({ session });
+
+      // Cập nhật số lượng trong đơn hàng
+      order.quantity = newQuantity;
+
+      await order.save({ session });
+
+      // Commit transaction
+      await session.commitTransaction();
+      session.endSession();
+      return order;
+    } catch (error) {
+      // Rollback transaction nếu có lỗi
+      await session.abortTransaction();
+      session.endSession();
+      throw err;
+    }
   };
 }
 module.exports = OrderService;

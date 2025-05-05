@@ -12,5 +12,8 @@ router.post(
 );
 
 router.get("/", asyncHandler(orderController.getOrder));
+router.post("/confirm", asyncHandler(orderController.confirmOrder));
+router.post("/cancel", asyncHandler(orderController.cancelOrder));
+router.post("/edit-quantity", asyncHandler(orderController.editQuantityOrder));
 
 module.exports = router;

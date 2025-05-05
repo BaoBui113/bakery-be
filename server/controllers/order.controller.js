@@ -19,14 +19,20 @@ class OrderController {
   static async confirmOrder(req, res) {
     return new SuccessResponse({
       message: "Order confirmed successfully",
-      metadata: await OrderService.confirmOrder(req.body.orderId),
+      metadata: await OrderService.confirmOrder(
+        req.body.orderId,
+        req.body.userId
+      ),
     }).send(res);
   }
 
   static async cancelOrder(req, res) {
     return new SuccessResponse({
       message: "Order cancelled successfully",
-      metadata: await OrderService.cancelOrder(req.body.orderId),
+      metadata: await OrderService.cancelOrder(
+        req.body.orderId,
+        req.body.userId
+      ),
     }).send(res);
   }
 
@@ -35,7 +41,8 @@ class OrderController {
       message: "Edit quantity order successfully",
       metadata: await OrderService.editQuantityOrder(
         req.body.orderId,
-        req.body.quantity
+        req.body.userId,
+        req.body.newQuantity
       ),
     }).send(res);
   }
