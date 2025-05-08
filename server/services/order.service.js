@@ -77,23 +77,145 @@ class OrderService {
     }
   }
 
-  static async getOrder() {
-    const orders = await orderModel
-      .find({})
-      .populate({
-        path: "productId",
-        populate: {
-          path: "category_id",
-        },
-      })
-      .populate({
-        path: "userId",
-        select: "-password", // loại bỏ field password
-      })
-      .lean();
+  static async getOrder(query) {
+    const { field, value, page = 1, limit = 10 } = query;
+    // console.log("productName", productName);
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const matchCondition =
+      field && value
+        ? {
+            [field]: { $regex: value, $options: "i" },
+          }
+        : {};
 
-    if (!orders) throw new BadRequestError("Order not found", 404);
-    return orders;
+    // Step 1: Count total items matching condition
+    const totalCountAggregate = await orderModel.aggregate([
+      {
+        $lookup: {
+          from: "Products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      { $unwind: "$product" },
+      {
+        $lookup: {
+          from: "Categories",
+          localField: "product.category_id",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      { $unwind: "$category" },
+      {
+        $lookup: {
+          from: "Auths",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $project: {
+          quantity: 1,
+          status: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          "product.name": 1,
+          "user.email": 1,
+          "user.phoneNumber": 1,
+          "user.role": 1,
+          "product._id": 1,
+          "product.name": 1,
+          "product.price": 1,
+          "product.image_url": 1,
+          "category.name": 1,
+          "category._id": 1,
+        },
+      },
+      { $match: matchCondition },
+      { $count: "totalItems" },
+    ]);
+
+    const totalItems = totalCountAggregate[0]?.totalItems || 0;
+    const totalPages = Math.ceil(totalItems / parseInt(limit));
+
+    const orders = await orderModel.aggregate([
+      // Join với bảng Product
+      {
+        $lookup: {
+          from: "Products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      { $unwind: "$product" },
+
+      // Join với bảng Category thông qua category_id
+      {
+        $lookup: {
+          from: "Categories",
+          localField: "product.category_id",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      { $unwind: "$category" },
+
+      // Join với bảng Auth (user)
+      {
+        $lookup: {
+          from: "Auths",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+
+      // Loại bỏ password
+      {
+        $project: {
+          quantity: 1,
+          status: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          "product._id": 1,
+          "product.name": 1,
+          "product.price": 1,
+          "product.image_url": 1,
+          "category.name": 1,
+          "category._id": 1,
+          "user._id": 1,
+          "user.name": 1,
+          "user.email": 1,
+          "user.phoneNumber": 1,
+          "user.role": 1,
+        },
+      },
+
+      ...(field && value
+        ? [
+            {
+              $match: {
+                [`${field}`]: { $regex: value, $options: "i" },
+              },
+            },
+          ]
+        : []),
+      { $skip: skip },
+      { $limit: parseInt(limit) },
+    ]);
+
+    return {
+      currentPage: parseInt(page),
+      totalPages,
+      totalItems,
+      items: orders,
+    };
   }
 
   static async confirmOrder(orderId, userId) {

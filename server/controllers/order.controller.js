@@ -12,7 +12,7 @@ class OrderController {
   static async getOrder(req, res) {
     return new SuccessResponse({
       message: "Get order successfully",
-      metadata: await OrderService.getOrder(),
+      metadata: await OrderService.getOrder(req.query),
     }).send(res);
   }
 
