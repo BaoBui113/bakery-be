@@ -224,8 +224,8 @@ class OrderService {
       userId,
     });
     if (!order) throw new BadRequestError("Order not found", 404);
-    if (order.status === "pending")
-      throw new BadRequestError("Order already cancelled", 400);
+    if (order.status === "cancelled" || order.status === "paid")
+      throw new BadRequestError("Order already cancelled or paid", 400);
     order.status = "paid";
     await order.save();
     return order;

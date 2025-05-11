@@ -10,4 +10,5 @@ router.use("/payment", require("./payment"));
 router.use("/cart", require("./cart"));
 router.use("/orders", require("./order"));
 router.use("/users", require("./user"));
+router.use("/reports", require("./report"));
 module.exports = router;
