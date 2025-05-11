@@ -194,5 +194,10 @@ class ReportService {
   }
 
   // Report user register
+  static async getReportUserRegister(type) {
+    if (type === "week") {
+      const now = new Date();
+    }
+  }
 }
 module.exports = ReportService;
