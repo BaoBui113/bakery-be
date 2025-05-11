@@ -13,7 +13,7 @@ class ReportService {
         endDate: newEndDate,
         groupingStage: newGroupingStage,
         resultTemplate: newResultTemplate,
-      } = await this.getReportByWeek(now);
+      } = await this.getReportOrderByWeek(now);
       startDate = newStartDate;
       endDate = newEndDate;
       groupingStage = newGroupingStage;
@@ -24,7 +24,7 @@ class ReportService {
         endDate: newEndDate,
         groupingStage: newGroupingStage,
         resultTemplate: newResultTemplate,
-      } = await this.getReportByMonth(now);
+      } = await this.getReportOrderByMonth(now);
       startDate = newStartDate;
       endDate = newEndDate;
       groupingStage = newGroupingStage;
@@ -56,7 +56,7 @@ class ReportService {
     return resultTemplate;
   }
 
-  static async getReportByWeek(now) {
+  static async getReportOrderByWeek(now) {
     const currentDay = now.getDay();
     const diffToMonday = (currentDay === 0 ? -6 : 1) - currentDay;
 
@@ -93,7 +93,7 @@ class ReportService {
     return { startDate, endDate, groupingStage, resultTemplate };
   }
 
-  static async getReportByMonth(now) {
+  static async getReportOrderByMonth(now) {
     const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
     startDate.setHours(0, 0, 0, 0);
 
@@ -192,5 +192,7 @@ class ReportService {
 
     return result;
   }
+
+  // Report user register
 }
 module.exports = ReportService;
