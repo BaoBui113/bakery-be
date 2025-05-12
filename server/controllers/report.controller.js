@@ -15,5 +15,12 @@ class ReportController {
       metadata: await ReportService.getreportByStatus(req.params.status),
     }).send(res);
   }
+
+  static async getReportUserRegister(req, res) {
+    return new SuccessResponse({
+      message: "Get report successfully",
+      metadata: await ReportService.getReportUserRegister(req.query.type),
+    }).send(res);
+  }
 }
 module.exports = ReportController;
