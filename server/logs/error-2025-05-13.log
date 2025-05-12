@@ -1,0 +1,2 @@
+[2025-05-13 00:05:10] [ERROR]: Error at POST /api/v1/uploads - Unexpected field - body: {} - query: {} - params: {}
+[2025-05-13 00:05:47] [ERROR]: Error at POST /api/v1/auth/register - Email already exists - body: {"email":"admin@gmail.com","password":"123456","name":"Bao Bui","phoneNumber":"0855454911","role":"admin"} - query: {} - params: {}

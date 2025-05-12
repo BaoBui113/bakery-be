@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "D:\\di_lam\\bakery-be\\server\\logs\\.ab636ef843a073c7448768a4800bb23b73bfb3d4-audit.json",
+    "files": [
+        {
+            "date": 1747069482901,
+            "name": "D:\\di_lam\\bakery-be\\server\\logs\\error-2025-05-13.log",
+            "hash": "679978c7adf66d562883be8eb5bf83e5e8ed224c8172fbb9ad47680cdd213313"
+        }
+    ],
+    "hashType": "sha256"
+}
