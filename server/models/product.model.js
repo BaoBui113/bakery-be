@@ -28,9 +28,9 @@ var ProductSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    image_url: {
-      type: String,
-      default: null,
+    image: {
+      url: { type: String, default: null },
+      publicId: { type: String, default: null },
     },
     is_active: {
       type: Boolean,

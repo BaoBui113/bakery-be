@@ -2,8 +2,12 @@
 const express = require("express");
 const upload = require("../middleware/uploadMiddleware");
 
-const { uploadController } = require("../controllers/upload.controller");
+const {
+  uploadController,
+  deleteImageController,
+} = require("../controllers/upload.controller");
 
 const router = express.Router();
-router.post("/", upload.single("image"), uploadController);
+router.post("/uploads", upload.single("image"), uploadController);
+router.post("/delete-upload", deleteImageController);
 module.exports = router;

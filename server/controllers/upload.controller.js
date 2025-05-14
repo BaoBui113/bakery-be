@@ -1,5 +1,5 @@
-const { uploadImage } = require("../services/upload.service");
-
+const { uploadImage, deleteImage } = require("../services/upload.service");
+const fs = require("fs");
 const uploadController = async (req, res) => {
   try {
     // Check if a file was uploaded
@@ -8,21 +8,40 @@ const uploadController = async (req, res) => {
     }
 
     // Get the file path
-    const filePath = req.file.path;
+    const filePath = req.file.path; // local path: ./uploads/...
+    const { url, publicId } = await uploadImage(filePath);
+    fs.unlink(filePath, (err) => {
+      if (err) console.error("Failed to delete local file:", err);
+    });
 
-    // Upload the image to Cloudinary
-    const result = await uploadImage(filePath);
-
-    // Send the response with the uploaded image URL
     return res.status(200).json({
       message: "Image uploaded successfully",
-      url: result,
+      url,
+      publicId,
     });
   } catch (error) {
     console.error("Error uploading image:", error);
     return res.status(500).json({ message: "Error uploading image" });
   }
 };
+const deleteImageController = async (req, res) => {
+  const { publicId } = req.body;
+
+  if (!publicId) {
+    return res.status(400).json({ message: "publicId là bắt buộc." });
+  }
+
+  try {
+    // Xóa ảnh trên Cloudinary
+    await deleteImage(publicId);
+
+    return res.status(200).json({ message: "Xóa ảnh thành công." });
+  } catch (error) {
+    console.error("Lỗi khi xóa ảnh:", error);
+    return res.status(500).json({ message: "Xóa ảnh thất bại.", error });
+  }
+};
 module.exports = {
   uploadController,
+  deleteImageController,
 };

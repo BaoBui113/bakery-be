@@ -38,8 +38,24 @@ class AuthService {
       name,
       phoneNumber,
     });
-
-    return newUser;
+    const payload = {
+      id: newUser._id,
+      email: newUser.email,
+      role: newUser.role,
+    };
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET_USER, {
+      expiresIn: "1h",
+    });
+    return {
+      accessToken,
+      user: {
+        id: newUser._id,
+        email: newUser.email,
+        name: newUser.name,
+        phoneNumber: newUser.phoneNumber,
+        role: newUser.role,
+      },
+    };
   }
 
   static async login(body) {

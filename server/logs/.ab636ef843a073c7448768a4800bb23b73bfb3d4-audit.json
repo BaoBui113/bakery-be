@@ -9,6 +9,16 @@
             "date": 1747069482901,
             "name": "D:\\di_lam\\bakery-be\\server\\logs\\error-2025-05-13.log",
             "hash": "679978c7adf66d562883be8eb5bf83e5e8ed224c8172fbb9ad47680cdd213313"
+        },
+        {
+            "date": 1747197577688,
+            "name": "D:\\di_lam\\bakery-be\\server\\logs\\error-2025-05-14.log",
+            "hash": "02833b9acd5a371810dcfd17c0f3f80fcc41e74c8a797ef771d1aaaa3718f475"
+        },
+        {
+            "date": 1747242841952,
+            "name": "D:\\di_lam\\bakery-be\\server\\logs\\error-2025-05-15.log",
+            "hash": "419f405f18a2754b43a938cc6efc1d32b17f6697b545c8ce1cbc0fac9d31c935"
         }
     ],
     "hashType": "sha256"
