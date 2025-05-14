@@ -51,7 +51,7 @@ class ProductService {
     };
   }
   static async createProduct(body) {
-    const { name, category_id, description, price, stock, image_url } = body;
+    const { name, category_id, description, price, stock, image } = body;
     if (!name || !category_id || !description || !price || !stock) {
       throw new BadRequestError("Missing required fields", 400);
     }
@@ -72,7 +72,7 @@ class ProductService {
       description,
       price,
       stock,
-      image_url,
+      image,
     });
     return newProduct;
   }
