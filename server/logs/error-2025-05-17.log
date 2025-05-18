@@ -1,0 +1,1 @@
+[2025-05-17 15:54:12] [ERROR]: Error at POST /api/v1/auth/check-email-exist - Email already exists - body: {"email":"admin@gmail.com"} - query: {} - params: {}

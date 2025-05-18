@@ -1,6 +1,5 @@
 const { BadRequestError } = require("../core/error.response");
 const categoryModel = require("../models/category.model");
-const { checkCategory } = require("../models/repository/category");
 
 class CategoryService {
   static async getAllCategories() {

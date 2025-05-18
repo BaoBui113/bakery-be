@@ -4,6 +4,8 @@ const orderModel = require("../models/order.model");
 const CartService = require("./cart.service");
 const convertToObjectMongoose = require("../helper/convertToObject");
 const productModel = require("../models/product.model");
+const authModel = require("../models/auth.model");
+const NotificationService = require("./notification.service");
 
 class OrderService {
   static async createOrder(productId, quantity, status, userId) {
@@ -27,8 +29,11 @@ class OrderService {
     session.startTransaction();
 
     try {
+      const user = await authModel.findById(userId);
+      if (!user) throw new BadRequestError("User not found");
       const orders = [];
-
+      const admin = await authModel.findOne({ role: "admin" });
+      if (!admin) throw new BadRequestError("Admin not found");
       for (const { productId, quantity } of cart) {
         const product = await productModel.findOneAndUpdate(
           {
@@ -64,6 +69,13 @@ class OrderService {
         );
         orders.push(order);
       }
+
+      await NotificationService.sendNotification({
+        title: "Một đơn hàng mới đã được tạo",
+        content: `Bạn có đơn hàng mới từ ${user.name}`,
+        from: userId,
+        to: admin._id,
+      });
 
       await session.commitTransaction();
       session.endSession();
@@ -206,6 +218,7 @@ class OrderService {
             },
           ]
         : []),
+      { $sort: { createdAt: -1 } },
       { $skip: skip },
       { $limit: parseInt(limit) },
     ]);

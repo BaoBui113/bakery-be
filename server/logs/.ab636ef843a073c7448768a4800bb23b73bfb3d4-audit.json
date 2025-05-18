@@ -19,6 +19,21 @@
             "date": 1747242841952,
             "name": "D:\\di_lam\\bakery-be\\server\\logs\\error-2025-05-15.log",
             "hash": "419f405f18a2754b43a938cc6efc1d32b17f6697b545c8ce1cbc0fac9d31c935"
+        },
+        {
+            "date": 1747470198240,
+            "name": "D:\\di_lam\\bakery-be\\server\\logs\\error-2025-05-17.log",
+            "hash": "0e6141d430e73da9455b3b6e01f4872c69bfa5b52b23faf03ffca8dadeea6c83"
+        },
+        {
+            "date": 1747559790974,
+            "name": "D:\\di_lam\\bakery-be\\server\\logs\\error-2025-05-18.log",
+            "hash": "1ea11d98ba5983bad010b02b13fbf15b9f2d5541115149e14d9041c807a7a83b"
+        },
+        {
+            "date": 1747588556607,
+            "name": "D:\\di_lam\\bakery-be\\server\\logs\\error-2025-05-19.log",
+            "hash": "cee0c4351df70dbd4a9687e9b4332e03bfdf935944d515c3ed6a5b22b7058aee"
         }
     ],
     "hashType": "sha256"
